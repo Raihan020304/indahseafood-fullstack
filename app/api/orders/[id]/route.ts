@@ -6,7 +6,7 @@ import { getOrderById } from '@/lib/db'
 
 export async function GET(
   req: NextRequest,
-  { params }: any
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
 
@@ -14,9 +14,10 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const order = await getOrderById(params.id)
+  const { id } = await context.params
 
-  // Pastikan order milik user ini (atau admin)
+  const order = await getOrderById(id)
+
   if (!order) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
