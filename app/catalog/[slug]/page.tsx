@@ -1,3 +1,5 @@
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getProductBySlug, getProductsByCategory } from '@/lib/products'
