@@ -1,19 +1,11 @@
-// app/api/orders/[id]/route.ts
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getOrderById } from '@/lib/db'
 
-type Context = {
-  params: Promise<{
-    id: string
-  }>
-}
-
 export async function GET(
   req: NextRequest,
-  context: Context
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
 
