@@ -1,18 +1,17 @@
-'use client'
-// app/catalog/[slug]/page.tsx
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getProductBySlug, getProductsByCategory } from '@/lib/products'
 import { ProductDetail } from '@/components/products/ProductDetail'
 import { ProductCard } from '@/components/products/ProductCard'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export default function ProductPage({ params }: Props) {
-  const product = getProductBySlug(params.slug)
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params
+
+  const product = getProductBySlug(slug)
   if (!product) notFound()
 
   const related = getProductsByCategory(product.category)
@@ -21,18 +20,16 @@ export default function ProductPage({ params }: Props) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/" className="hover:text-ocean-600 transition-colors">Beranda</Link>
+        <Link href="/">Beranda</Link>
         <span>/</span>
-        <Link href="/catalog" className="hover:text-ocean-600 transition-colors">Katalog</Link>
+        <Link href="/catalog">Katalog</Link>
         <span>/</span>
         <span className="text-slate-800 font-medium">{product.name}</span>
       </nav>
 
       <ProductDetail product={product} />
 
-      {/* Produk Terkait */}
       {related.length > 0 && (
         <section className="mt-16">
           <h2 className="section-title mb-6">Produk Serupa</h2>
