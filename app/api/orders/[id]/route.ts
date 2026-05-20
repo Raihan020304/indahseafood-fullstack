@@ -1,17 +1,27 @@
 // app/api/orders/[id]/route.ts
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getOrderById } from '@/lib/db'
 
+type Context = {
+  params: Promise<{
+    id: string
+  }>
+}
+
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: Context
 ) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
   }
 
   const { id } = await context.params
@@ -19,14 +29,20 @@ export async function GET(
   const order = await getOrderById(id)
 
   if (!order) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    return NextResponse.json(
+      { error: 'Not found' },
+      { status: 404 }
+    )
   }
 
   if (
     order.user_email !== session.user.email &&
     session.user.role !== 'admin'
   ) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Forbidden' },
+      { status: 403 }
+    )
   }
 
   return NextResponse.json({ order })
